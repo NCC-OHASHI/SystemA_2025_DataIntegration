@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Management.Common; // これを追加
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -28,7 +29,6 @@ namespace Management
             // 仕様：検索条件の内容を初期表示の状態にする
             InitializeInput();
 
-            MessageBox.Show("検索条件をクリアしました。", "クリア処理");
         }
 
         private void btnClose_Click(object sender, EventArgs e)
@@ -41,40 +41,41 @@ namespace Management
         {
             try
             {
-                // --- 1. 入力チェック ---
+                // 1. 入力チェック（資料 Page 18）
 
-                // 分類のチェック（少なくとも1つ）
+                // 分類が少なくとも1つ選ばれているか
                 if (!chkTypeSend.Checked && !chkTypeRecv.Checked)
                 {
                     MessageBox.Show("分類は少なくとも1つ選択してください。", "入力チェックエラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
-                // ステータスのチェック（少なくとも1つ）
+                // ステータスが少なくとも1つ選ばれているか
                 if (!chkStatusDone.Checked && !chkStatusRetry.Checked && !chkStatusError.Checked)
                 {
                     MessageBox.Show("ステータスは少なくとも1つ選択してください。", "入力チェックエラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
-                // 期間の整合性チェック
+                // 期間の整合性チェック（開始 > 終了 になっていないか）
                 if (dtpDateFrom.Value.Date > dtpDateTo.Value.Date)
                 {
                     MessageBox.Show("期間の開始年月は終了年月以前を設定してください。", "入力チェックエラー", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
-                // 仕様：検索ボタン押下後に更新ボタンをアクティブにする
-                btnRefresh.Enabled = true;
+                // 2. 検索処理の実行
+                SearchTransmissionData();
 
+                // 3. 検索成功後に更新ボタンを有効化する
+                btnRefresh.Enabled = true;
             }
             catch (Exception ex)
             {
-                // 仕様：エラー発生時はエラーメッセージを表示し処理を中止
                 MessageBox.Show("データの取得中にエラーが発生しました。\n" + ex.Message, "システムエラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                // 仕様：例外エラー時はエラーログを記録する
-                // LogError(ex); // ログ記録用メソッド（実装は省略）
+                // 【エラーログこの1行を追加！】
+                Log.WriteLog(ex.ToString());
             }
         }
 
@@ -87,30 +88,53 @@ namespace Management
             MessageBox.Show("最新の送受信ログを取得しました。", "更新完了", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        // --- 共通メソッド：入力項目を初期状態に戻す ---
         private void InitializeInput()
         {
+            // 1. 期間を現在年月に設定（資料 Page 18）
             DateTime currentData = DateTime.Now;
-
-            // 期間：現在年月
             dtpDateFrom.Value = currentData;
             dtpDateTo.Value = currentData;
 
-            // 分類：全チェック
+            // 2. 分類チェックボックスを全てオンにする
             chkTypeSend.Checked = true;
             chkTypeRecv.Checked = true;
 
-            // ステータス：全チェック
+            // 3. ステータスチェックボックスを全てオンにする
             chkStatusDone.Checked = true;
             chkStatusRetry.Checked = true;
             chkStatusError.Checked = true;
+
+            // ※もし前回の検索結果が残っていたら消す
+            dgvTransmission.DataSource = null;
         }
 
-        // --- 共通メソッド：エラーログ記録用（実装は省略） ---
-        private void LogError(Exception ex)
+        private void SearchTransmissionData()
         {
-            // ログ記録の実装は省略
+            DBUtil db = new DBUtil();
 
+            // 分類のリスト作成 (送信=0, 受信=1)
+            List<int> categories = new List<int>();
+            if (chkTypeSend.Checked) categories.Add(0);
+            if (chkTypeRecv.Checked) categories.Add(1);
+
+            // ステータスのリスト作成 (済み=0, 再送待ち=1, 異常=2)
+            List<int> statuses = new List<int>();
+            if (chkStatusDone.Checked) statuses.Add(0);
+            if (chkStatusRetry.Checked) statuses.Add(1);
+            if (chkStatusError.Checked) statuses.Add(2);
+
+            // データベースからデータを取得
+            DataTable dt = db.GetTransmissionLogs(
+                dtpDateFrom.Value,
+                dtpDateTo.Value,
+                categories,
+                statuses
+            );
+
+            // 表（DataGridView）に表示
+            dgvTransmission.AutoGenerateColumns = false; // 勝手に列を増やさない
+            dgvTransmission.DataSource = dt;
         }
+
     }
 }

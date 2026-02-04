@@ -46,6 +46,10 @@
             btnSearch = new Button();
             btnClear = new Button();
             dgvSales = new DataGridView();
+            btnSend = new Button();
+            btnRefresh = new Button();
+            btnClose = new Button();
+            label6 = new Label();
             colSalesDate = new DataGridViewTextBoxColumn();
             colCategory = new DataGridViewTextBoxColumn();
             colItemNo = new DataGridViewTextBoxColumn();
@@ -53,10 +57,6 @@
             colQuantity = new DataGridViewTextBoxColumn();
             colDiscount = new DataGridViewTextBoxColumn();
             colAmount = new DataGridViewTextBoxColumn();
-            btnSend = new Button();
-            btnRefresh = new Button();
-            btnClose = new Button();
-            label6 = new Label();
             groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvSales).BeginInit();
             SuspendLayout();
@@ -255,41 +255,6 @@
             dgvSales.Size = new Size(777, 317);
             dgvSales.TabIndex = 3;
             // 
-            // colSalesDate
-            // 
-            colSalesDate.HeaderText = "販売日時";
-            colSalesDate.Name = "colSalesDate";
-            // 
-            // colCategory
-            // 
-            colCategory.HeaderText = "分類";
-            colCategory.Name = "colCategory";
-            // 
-            // colItemNo
-            // 
-            colItemNo.HeaderText = "商品番号";
-            colItemNo.Name = "colItemNo";
-            // 
-            // colItemName
-            // 
-            colItemName.HeaderText = "商品名";
-            colItemName.Name = "colItemName";
-            // 
-            // colQuantity
-            // 
-            colQuantity.HeaderText = "売上数量";
-            colQuantity.Name = "colQuantity";
-            // 
-            // colDiscount
-            // 
-            colDiscount.HeaderText = "割引適用額";
-            colDiscount.Name = "colDiscount";
-            // 
-            // colAmount
-            // 
-            colAmount.HeaderText = "売上額";
-            colAmount.Name = "colAmount";
-            // 
             // btnSend
             // 
             btnSend.Enabled = false;
@@ -333,6 +298,48 @@
             label6.Size = new Size(111, 37);
             label6.TabIndex = 7;
             label6.Text = "売上管理";
+            // 
+            // colSalesDate
+            // 
+            colSalesDate.DataPropertyName = "販売日時";
+            colSalesDate.HeaderText = "販売日時";
+            colSalesDate.Name = "colSalesDate";
+            // 
+            // colCategory
+            // 
+            colCategory.DataPropertyName = "分類";
+            colCategory.HeaderText = "分類";
+            colCategory.Name = "colCategory";
+            // 
+            // colItemNo
+            // 
+            colItemNo.DataPropertyName = "商品番号";
+            colItemNo.HeaderText = "商品番号";
+            colItemNo.Name = "colItemNo";
+            // 
+            // colItemName
+            // 
+            colItemName.DataPropertyName = "商品名";
+            colItemName.HeaderText = "商品名";
+            colItemName.Name = "colItemName";
+            // 
+            // colQuantity
+            // 
+            colQuantity.DataPropertyName = "売上数量";
+            colQuantity.HeaderText = "売上数量";
+            colQuantity.Name = "colQuantity";
+            // 
+            // colDiscount
+            // 
+            colDiscount.DataPropertyName = "割引適用額";
+            colDiscount.HeaderText = "割引適用額";
+            colDiscount.Name = "colDiscount";
+            // 
+            // colAmount
+            // 
+            colAmount.DataPropertyName = "売上額";
+            colAmount.HeaderText = "売上額";
+            colAmount.Name = "colAmount";
             // 
             // SalesData
             // 

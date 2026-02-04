@@ -5,7 +5,7 @@
     },
     "店舗売上データ送信": {
       "commandName": "Project",
-      "commandLineArgs": "1\r\n202601\r\n202601"
+      "commandLineArgs": "1\r\n202510\r\n202601"
     },
     "商品マスタ受信": {
       "commandName": "Project",

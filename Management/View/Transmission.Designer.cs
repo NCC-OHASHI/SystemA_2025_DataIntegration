@@ -32,11 +32,6 @@
             btnClose = new Button();
             btnRefresh = new Button();
             dgvTransmission = new DataGridView();
-            colProcDate = new DataGridViewTextBoxColumn();
-            colType = new DataGridViewTextBoxColumn();
-            colFileName = new DataGridViewTextBoxColumn();
-            colStatus = new DataGridViewTextBoxColumn();
-            colMessage = new DataGridViewTextBoxColumn();
             btnClear = new Button();
             btnSearch = new Button();
             groupBox1 = new GroupBox();
@@ -52,6 +47,11 @@
             dtpDateFrom = new DateTimePicker();
             label1 = new Label();
             label4 = new Label();
+            colProcDate = new DataGridViewTextBoxColumn();
+            colType = new DataGridViewTextBoxColumn();
+            colFileName = new DataGridViewTextBoxColumn();
+            colStatus = new DataGridViewTextBoxColumn();
+            colMessage = new DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)dgvTransmission).BeginInit();
             groupBox1.SuspendLayout();
             SuspendLayout();
@@ -98,31 +98,6 @@
             dgvTransmission.Name = "dgvTransmission";
             dgvTransmission.Size = new Size(777, 218);
             dgvTransmission.TabIndex = 11;
-            // 
-            // colProcDate
-            // 
-            colProcDate.HeaderText = "処理日時";
-            colProcDate.Name = "colProcDate";
-            // 
-            // colType
-            // 
-            colType.HeaderText = "分類";
-            colType.Name = "colType";
-            // 
-            // colFileName
-            // 
-            colFileName.HeaderText = "ファイル名";
-            colFileName.Name = "colFileName";
-            // 
-            // colStatus
-            // 
-            colStatus.HeaderText = "ステータス";
-            colStatus.Name = "colStatus";
-            // 
-            // colMessage
-            // 
-            colMessage.HeaderText = "出力メッセージ";
-            colMessage.Name = "colMessage";
             // 
             // btnClear
             // 
@@ -293,6 +268,36 @@
             label4.Size = new Size(140, 37);
             label4.TabIndex = 16;
             label4.Text = "送受信管理";
+            // 
+            // colProcDate
+            // 
+            colProcDate.DataPropertyName = "処理日時";
+            colProcDate.HeaderText = "処理日時";
+            colProcDate.Name = "colProcDate";
+            // 
+            // colType
+            // 
+            colType.DataPropertyName = "分類";
+            colType.HeaderText = "分類";
+            colType.Name = "colType";
+            // 
+            // colFileName
+            // 
+            colFileName.DataPropertyName = "ファイル名";
+            colFileName.HeaderText = "ファイル名";
+            colFileName.Name = "colFileName";
+            // 
+            // colStatus
+            // 
+            colStatus.DataPropertyName = "ステータス";
+            colStatus.HeaderText = "ステータス";
+            colStatus.Name = "colStatus";
+            // 
+            // colMessage
+            // 
+            colMessage.DataPropertyName = "出力メッセージ";
+            colMessage.HeaderText = "出力メッセージ";
+            colMessage.Name = "colMessage";
             // 
             // Transmission
             // 
