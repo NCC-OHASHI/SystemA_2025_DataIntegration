@@ -11,19 +11,19 @@ namespace Management.Common
 
         public DBUtil()
         {
-            // App.configに書いた設定を読み込みます
+            // App.configを読み込む
             string server = ConfigurationManager.AppSettings["DB_SERVER"];
             string db = ConfigurationManager.AppSettings["DB_NAME"];
             string user = ConfigurationManager.AppSettings["DB_USER"];
             string pass = ConfigurationManager.AppSettings["DB_PASS"];
             DBSchema = ConfigurationManager.AppSettings["DB_SCHEMA"];
 
-            // データベースに接続するための「合言葉」を作ります
+            // データベースに接続する
             ConnectionString = $"Data Source={server};Initial Catalog={db};User ID={user};Password={pass};Encrypt=True;TrustServerCertificate=True;";
         }
 
         /// <summary>
-        /// 売上データを検索して、表形式（DataTable）で返します
+        /// 売上データを検索して、表形式（DataTable）で返す
         /// </summary>
         public DataTable GetSalesData(DateTime start, DateTime end, List<string> categories, string itemNo, string itemName)
         {
@@ -31,8 +31,7 @@ namespace Management.Common
 
             using (var conn = new SqlConnection(ConnectionString))
             {
-                // 資料Page 3, 15に基づき、売上(sales)・商品マスタ(product_master)・商品名(product_name)を結合します
-                // UIで「商品名」を表示する必要があるため、3つのテーブルを合体させてデータを取ります
+                // テーブルからデータを取得する
                 string sql = $@"
                     SELECT 
                         s.sale_date AS '販売日時',
@@ -53,17 +52,17 @@ namespace Management.Common
                     INNER JOIN {DBSchema}.product_name pn ON s.item_code = pn.item_code
                     WHERE s.sale_date >= @start AND s.sale_date < @end";
 
-                // チェックボックスで選んだ分類だけを絞り込む条件を追加
+                // チェックボックスで選んだ分類だけを絞り込む
                 if (categories.Count > 0)
                 {
                     string catIn = string.Join(",", categories.Select((c, i) => $"@cat{i}"));
                     sql += $" AND p.category_id IN ({catIn})";
                 }
 
-                // 商品番号が入力されていたら絞り込む
+                // 商品番号絞り込み
                 if (!string.IsNullOrEmpty(itemNo)) sql += " AND p.item_no = @itemNo";
 
-                // 商品名が入力されていたら「あいまい検索」をする
+                // 商品名絞り込み
                 if (!string.IsNullOrEmpty(itemName)) sql += " AND pn.item_name LIKE @itemName";
 
                 var cmd = new SqlCommand(sql, conn);
@@ -79,13 +78,13 @@ namespace Management.Common
                 if (!string.IsNullOrEmpty(itemName)) cmd.Parameters.AddWithValue("@itemName", "%" + itemName + "%");
 
                 var adapter = new SqlDataAdapter(cmd);
-                adapter.Fill(dt); // 結果を表(dt)に流し込む
+                adapter.Fill(dt); // 取得したデータをテーブルに入れる
             }
             return dt;
         }
 
         /// <summary>
-        /// 送受信ログを検索して、表形式（DataTable）で返します
+        /// 送受信ログを検索して、表形式（DataTable）で返す
         /// </summary>
         public DataTable GetTransmissionLogs(DateTime start, DateTime end, List<int> categories, List<int> statuses)
         {
@@ -93,29 +92,28 @@ namespace Management.Common
 
             using (var conn = new SqlConnection(ConnectionString))
             {
-                // 1. SQLの基本形（資料 Page 1に基づき、transmissionテーブルから取得）
-                // ユーザーにわかりやすいように CASE文で「送信/受信」や「送信済み/異常」などの名前に変換します
+                // transmissionテーブルからデータを取得、加工
                 string sql = $@"
-            SELECT 
-                processed_at AS N'処理日時',
-                CASE category WHEN 0 THEN N'送信' ELSE N'受信' END AS N'分類',
-                file_name AS N'ファイル名',
-                CASE status 
-                    WHEN 0 THEN N'送信済み' 
-                    WHEN 1 THEN N'再送待ち' 
-                    ELSE N'異常' 
-                END AS N'ステータス',
-                output_message AS N'出力メッセージ'
-            FROM {DBSchema}.transmission
-            WHERE processed_at >= @start AND processed_at < @end";
+                    SELECT 
+                        processed_at AS N'処理日時',
+                        CASE category WHEN 0 THEN N'送信' ELSE N'受信' END AS N'分類',
+                        file_name AS N'ファイル名',
+                        CASE status 
+                            WHEN 0 THEN N'送信済み' 
+                            WHEN 1 THEN N'再送待ち' 
+                            ELSE N'異常' 
+                        END AS N'ステータス',
+                        output_message AS N'出力メッセージ'
+                    FROM {DBSchema}.transmission
+                    WHERE processed_at >= @start AND processed_at < @end";
 
-                // 2. 分類チェックボックスの絞り込み（送信：0, 受信：1）
+                // 分類チェックボックスの絞り込み
                 if (categories.Count > 0)
                 {
                     sql += $" AND category IN ({string.Join(",", categories)})";
                 }
 
-                // 3. ステータスチェックボックスの絞り込み（済み：0, 再送待ち：1, 異常：2）
+                // ステータスチェックボックスの絞り込み
                 if (statuses.Count > 0)
                 {
                     sql += $" AND status IN ({string.Join(",", statuses)})";
