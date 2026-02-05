@@ -85,6 +85,10 @@ namespace Batch
             catch (Exception ex)
             {
                 Log.WriteLog(ex.ToString());
+
+                // 呼び出し元にエラー内容を伝える
+                Console.Error.WriteLine(ex.Message);
+
                 Environment.Exit(1);
             }
         }

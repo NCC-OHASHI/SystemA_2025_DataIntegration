@@ -112,12 +112,16 @@ namespace Management
                     FileName = batchPath,
                     Arguments = $"1 {startMonth} {endMonth}", // 1 は「店舗売上データ送信」
                     UseShellExecute = false,
-                    CreateNoWindow = true
+                    CreateNoWindow = true,
+                     RedirectStandardError = true
                 };
 
-                // バッチを実行し、終わるまで待つ
+                // バッチを実行
                 using (var process = System.Diagnostics.Process.Start(startInfo))
                 {
+                    // Batch側のエラーメッセージを読み取る
+                    string errorDetail = process.StandardError.ReadToEnd();
+
                     process.WaitForExit();
 
                     // 終了コード（リターンコード）で成功・失敗を判定
@@ -133,7 +137,7 @@ namespace Management
                         MessageBox.Show("送信処理でエラーが発生しました。ログを確認してください。", "異常終了", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                         // バッチが異常終了したことをログに記録する
-                        Log.WriteLog($"Batch.exeが異常終了しました。リターンコード: {process.ExitCode} (期間: {startMonth}-{endMonth})");
+                        Log.WriteLog($"Batch.exe異常終了。詳細: {errorDetail.Trim()} (期間: {startMonth}-{endMonth})");
                     }
                 }
             }
